@@ -13,12 +13,12 @@
 
 #pragma comment(lib, "Ws2_32.lib")
 
-// ÏûÏ¢Í·
+// æ¶ˆæ¯å¤´
 struct MessageHeader {
     uint32_t length;
 };
 
-// ÏûÏ¢ÀàĞÍ A
+// æ¶ˆæ¯ç±»å‹ A
 struct AddOrderNoMPID {
     char type = 'A';
     uint16_t stockLocate;
@@ -31,7 +31,7 @@ struct AddOrderNoMPID {
     uint32_t price;
 };
 
-// ÏûÏ¢ÀàĞÍ F
+// æ¶ˆæ¯ç±»å‹ F
 struct AddOrderWithMPID {
     char type = 'F';
     uint16_t stockLocate;
@@ -45,7 +45,7 @@ struct AddOrderWithMPID {
     char attribution[4];
 };
 
-// ÏûÏ¢ÀàĞÍ U
+// æ¶ˆæ¯ç±»å‹ U
 struct OrderReplace {
     char type = 'U';
     uint16_t stockLocate;
@@ -57,7 +57,7 @@ struct OrderReplace {
     uint32_t price;
 };
 
-// ÏûÏ¢ÀàĞÍ E
+// æ¶ˆæ¯ç±»å‹ E
 struct OrderExecuted {
     char type = 'E';
     uint16_t stockLocate;
@@ -68,7 +68,7 @@ struct OrderExecuted {
     uint64_t matchNumber;
 };
 
-// ÏûÏ¢ÀàĞÍ C
+// æ¶ˆæ¯ç±»å‹ C
 struct OrderExecutedWithPrice {
     char type = 'C';
     uint16_t stockLocate;
@@ -81,7 +81,7 @@ struct OrderExecutedWithPrice {
     uint32_t executionPrice;
 };
 
-// ÏûÏ¢ÀàĞÍ X
+// æ¶ˆæ¯ç±»å‹ X
 struct OrderCancel {
     char type = 'X';
     uint16_t stockLocate;
@@ -91,7 +91,7 @@ struct OrderCancel {
     uint32_t cancelledShares;
 };
 
-// ÏûÏ¢ÀàĞÍ D
+// æ¶ˆæ¯ç±»å‹ D
 struct OrderDelete {
     char type = 'D';
     uint16_t stockLocate;
@@ -100,7 +100,7 @@ struct OrderDelete {
     uint64_t orderReferenceNumber;
 };
 
-// ×ª»»ÎªÍøÂç×Ö½ÚĞò
+// è½¬æ¢ä¸ºç½‘ç»œå­—èŠ‚åº
 uint16_t htons_wrapper(uint16_t value) {
     return htons(value);
 }
@@ -115,7 +115,7 @@ uint64_t htonll_wrapper(uint64_t value) {
     return (static_cast<uint64_t>(htonl_wrapper(high)) << 32) | htonl_wrapper(low);
 }
 
-// Éú³ÉËæ»ú×Ö·û´®
+// ç”Ÿæˆéšæœºå­—ç¬¦ä¸²
 std::string generateRandomString(size_t length) {
     static const std::string charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     std::random_device rd;
@@ -130,7 +130,7 @@ std::string generateRandomString(size_t length) {
     return result;
 }
 
-// ĞòÁĞ»¯ÏûÏ¢
+// åºåˆ—åŒ–æ¶ˆæ¯
 template <typename T>
 std::vector<uint8_t> serialize(const T& msg) {
     std::vector<uint8_t> buffer(sizeof(MessageHeader) + sizeof(T));
@@ -140,7 +140,7 @@ std::vector<uint8_t> serialize(const T& msg) {
     T* msgPtr = reinterpret_cast<T*>(buffer.data() + sizeof(MessageHeader));
     *msgPtr = msg;
 
-    // ×ª»»ÕûÊı×Ö¶Îµ½ÍøÂç×Ö½ÚĞò
+    // è½¬æ¢æ•´æ•°å­—æ®µåˆ°ç½‘ç»œå­—èŠ‚åº
     msgPtr->stockLocate = htons_wrapper(msgPtr->stockLocate);
     msgPtr->trackingNumber = htons_wrapper(msgPtr->trackingNumber);
     msgPtr->timestamp = htonll_wrapper(msgPtr->timestamp);
@@ -180,7 +180,7 @@ std::vector<uint8_t> serialize(const T& msg) {
     return buffer;
 }
 
-// Ïß³Ì°²È«µÄ¶ÓÁĞ
+// çº¿ç¨‹å®‰å…¨çš„é˜Ÿåˆ—
 template <typename T>
 class ThreadSafeQueue {
 private:
@@ -208,10 +208,10 @@ public:
     }
 };
 
-// ·¢ËÍÏß³Ìº¯Êı
+// å‘é€çº¿ç¨‹å‡½æ•°
 void senderThread(SOCKET sock, ThreadSafeQueue<std::vector<uint8_t>>& messageQueue) {
     std::vector<uint8_t> batch;
-    const size_t batchSize = 1024 * 1024; // 1MB ÅúÁ¿·¢ËÍ
+    const size_t batchSize = 1024 * 1024; // 1MB æ‰¹é‡å‘é€
     batch.reserve(batchSize);
 
     while (true) {
@@ -252,7 +252,7 @@ int main() {
         return 1;
     }
 
-    // ½ûÓÃ Nagle Ëã·¨
+    // ç¦ç”¨ Nagle ç®—æ³•
     int opt = 1;
     setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&opt), sizeof(opt));
 
